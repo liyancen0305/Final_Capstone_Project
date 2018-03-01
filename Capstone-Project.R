@@ -87,9 +87,9 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
       names(Round_Rock_Unemployment_Original)[2] <- "Unemployment_Rate"
   #b. format the years
       #- only have the first month of every year
-      a <- endsWith(as.character(LA_Unemployment_Original$Year), "Â£Â¯1Â£Â¯1")  # Which rows to keep (kp)?
+      a <- endsWith(as.character(LA_Unemployment_Original$Year), "£¯1£¯1")  # Which rows to keep (kp)?
       LA_Unemployment_Clean <- LA_Unemployment_Original[a, ]
-      b <- endsWith(as.character(Round_Rock_Unemployment_Original$Year), "Â£Â¯1Â£Â¯1")  # Which rows to keep (kp)?
+      b <- endsWith(as.character(Round_Rock_Unemployment_Original$Year), "£¯1£¯1")  # Which rows to keep (kp)?
       Round_Rock_Unemployment_Clean <- Round_Rock_Unemployment_Original[b, ]
       #- format the "year"
       LA_Unemployment_Clean$Year <- year(as.Date(LA_Unemployment_Clean$Year, "%y"))
@@ -100,9 +100,9 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
       datFile10 <- paste(datDir, "Round_Rock_Unemployment_Clean.csv", sep = "/")
       write.table(Round_Rock_Unemployment_Clean, datFile10)
   #d. select 1990. 2000, 2010, 2016 for my dataset
-      Round_Rock_U <- Round_Rock_Unemployment_Clean[c(1,11,21,27), ]
-      LA_U <- LA_Unemployment_Clean[c(1,11,21,27), ]
-      names(Round_Rock_U)[2] <- "Unemployment_Rate"
+      #Round_Rock_U <- Round_Rock_Unemployment_Clean[c(1,11,21,27), ]
+      #LA_U <- LA_Unemployment_Clean[c(1,11,21,27), ]
+      #names(Round_Rock_U)[2] <- "Unemployment_Rate"
       
 # 2. Los_Angeles_Demographic_Original.csv vs. Round_Rock_Demographic_Original.csv.
   #a. rename columns
@@ -128,17 +128,17 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
       names(LA_Historical_Population_Original)[3] <- "Percentage_Change"
       names(Round_Rock_Historical_Population_Original)[3] <- "Percentage_Change"
   #b. delete meaningless rows.
-      Round_Rock_Historical_Population_Original <- Round_Rock_Historical_Population_Original[1:15, ]
-      LA_Historical_Population_Original <- LA_Historical_Population_Original[1:18, ]
+      Round_Rock_Historical_Population_Clean <- Round_Rock_Historical_Population_Original[1:15, ]
+      LA_Historical_Population_Clean <- LA_Historical_Population_Original[1:18, ]
   #c. save to a new file
       datFile13 <- paste(datDir, "Los_Angeles_Historical_Population_Clean.csv", sep = "/")
       write.table(LA_Historical_Population_Clean, datFile13)
       datFile14 <- paste(datDir, "Round_Rock_Historical_Population_Clean.csv", sep = "/")
       write.table(Round_Rock_Historical_Population_Clean, datFile14)
   #d. select 1990. 2000, 2010, 2016 for my dataset
-      Round_Rock_P <- Round_Rock_Historical_Population_Original[c(12,13,14,15), ]
-      LA_P <- LA_Historical_Population_Original[c(15,16,17,18), ]
-      names(Round_Rock_P)[2:3] <- c("Population", "Percentage_Change")
+      #Round_Rock_P <- Round_Rock_Historical_Population_Original[c(12,13,14,15), ]
+      #LA_P <- LA_Historical_Population_Original[c(15,16,17,18), ]
+      #names(Round_Rock_P)[2:3] <- c("Population", "Percentage_Change")
 
 # 4. Los_Angeles_HPI_Original.csv vs. Round_Rock_HPI_Original.csv.
     #a. rename columns
@@ -147,9 +147,9 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
       names(LA_HPI_Original)[2] <- "HPI"
       names(Round_Rock_HPI_Original)[2] <- "HPI"
     #b. only remain the first quarter of every year
-      d <- endsWith(as.character(Round_Rock_HPI_Original$Year), "Â£Â¯1Â£Â¯1")  # Which rows to keep (kp)?
+      d <- endsWith(as.character(Round_Rock_HPI_Original$Year), "£¯1£¯1")  # Which rows to keep (kp)?
       Round_Rock_HPI_Clean <- Round_Rock_HPI_Original[d,]
-      g <- endsWith(as.character(LA_HPI_Original$Year), "Â£Â¯1Â£Â¯1")  # Which rows to keep (kp)?
+      g <- endsWith(as.character(LA_HPI_Original$Year), "£¯1£¯1")  # Which rows to keep (kp)?
       LA_HPI_Clean <- LA_HPI_Original[g,]
     #c. make two data comparable in the number of years
       #LA_HPI_Clean <- LA_HPI_Original[4:42, ]
@@ -163,26 +163,34 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
       datFile16 <- paste(datDir, "Round_Rock_HPI_Clean.csv", sep = "/")
       write.table(Round_Rock_HPI_Clean, datFile16)
     #f. combine two dataset
-      LA_HPI <- LA_HPI_Clean[c(16,26,36,42), ]
-      Round_Rock_HPI <- Round_Rock_HPI_Clean[c(13,23,33,39), ]
+      #LA_HPI <- LA_HPI_Clean[c(16,26,36,42), ]
+      #Round_Rock_HPI <- Round_Rock_HPI_Clean[c(13,23,33,39), ]
       
 #5. LA Dataset combined.
-      LA_Dataset <- cbind(LA_P, LA_HPI$HPI, LA_U$Unemployment_Rate)
+      #LA_Dataset <- cbind(LA_P, LA_HPI$HPI, LA_U$Unemployment_Rate)
 #6. Round Rock Dataset combined.
-      Round_Rock_Dataset <- cbind(Round_Rock_P, Round_Rock_HPI$HPI, Round_Rock_U$Unemployment_Rate)
+      #Round_Rock_Dataset <- cbind(Round_Rock_P, Round_Rock_HPI$HPI, Round_Rock_U$Unemployment_Rate)
       
-#7. Merge all dataset together
-      Dataset <- merge(LA_Dataset, Round_Rock_Dataset, all = TRUE, by.x = "Census", by.y = "Census")
-      names(Dataset)[2:9] <- c("Population", "Percentage_Change", "HPI", "Unemployment_Rate", "Population_RK", "Percentage_Change_RK", "HPI_RK","Unemployment_Rate_RK")
-     
+#7. Merge all dataset together for LA
+      LA_Dataset <- merge(LA_HPI_Clean, LA_Historical_Population_Clean, all = TRUE, by.x = "Year", by.y = "Census")
+      LA_Dataset <- merge(LA_Dataset, LA_Unemployment_Clean, all = TRUE, by.x = "Year", by.y = "Year")
+      #names(Dataset)[2:9] <- c("Population", "Percentage_Change", "HPI", "Unemployment_Rate", "Population_RK", "Percentage_Change_RK", "HPI_RK","Unemployment_Rate_RK")
+
+#8. Merge all dataset together for Round Rock
+      RK_Dataset <- merge(Round_Rock_HPI_Clean, Round_Rock_Historical_Population_Clean, all = TRUE, by.x = "Year", by.y = "Census")
+      RK_Dataset <- merge(RK_Dataset, Round_Rock_Unemployment_Clean, all = TRUE, by.x = "Year", by.y = "Year")
+      names(RK_Dataset)[1:5] <- c("Year_RK", "HPI_RK", "Population_RK", "Percentage_Change_RK", "Unemployment_Rate_RK")
+      
+#9. Merge all dataset together
+      Dataset <- merge(LA_Dataset, RK_Dataset, all = TRUE, by.x = "Year", by.y = "Year_RK")
       
 ################################## Explanatory Data Anlysis ################################################
 # B. Explanatory Data Anlysis
       # 1. Los_Angles_unemployment_Original.csv vs. Round_Rock_Unemployment_Original.csv, Line graph
-        Unemployment_line <- ggplot(Dataset, aes(x= Census)) +
+        Unemployment_line <- ggplot(Dataset[29:57, ], aes(x= Year)) +
                 geom_line(aes( y = Unemployment_Rate, colour = "Los Angeles", group = 1))+
                 geom_line(aes( y = Unemployment_Rate_RK, colour = "Round Rock", group = 1)) +
-                ggtitle ("Unemployment Rate Trend From 1990 To 2016")
+                ggtitle ("Unemployment Rate Trend")
      
         Unemployment_line
 
@@ -201,10 +209,10 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
 
       # 3. Los_Angeles_Historical_Population_Origianl vs Round_Rock_Historical_Population_Original, Bar plot
          
-          ratio_LA <- as.numeric(gsub('\\%', '', as.character(Dataset[,3])))
-          ratio_Round_Rock <-  as.numeric(gsub('\\%', '', as.character(Dataset[,7])))
+          ratio_LA <- as.numeric(gsub('\\%', '', as.character(Dataset[,4])))
+          ratio_Round_Rock <-  as.numeric(gsub('\\%', '', as.character(Dataset[,8])))
           
-          Historical_Population_bar <- plot_ly(Dataset, x = ~Census, y = ~ratio_LA, text = ~Percentage_Change, textposition = 'auto', type = 'bar', name = 'Los Angeles') %>%
+          Historical_Population_bar <- plot_ly(Dataset, x = ~Year, y = ~ratio_LA, text = ~Percentage_Change, textposition = 'auto', type = 'bar', name = 'Los Angeles') %>%
             add_trace(y = ~ratio_Round_Rock, text = ~Percentage_Change_RK, name = 'Round Rock') %>%
             layout(title = "Historical Population Trend",
                    yaxis = list(title = "Population Trend Ratio"))
@@ -212,7 +220,7 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
           
       # 4. Los_Angeles_HPI_Original.csv vs. Round_Rock_HPI_Original.csv, Line graph
 
-          HPI_line <- ggplot(Dataset, aes(x= Census, y = HPI)) +
+          HPI_line <- ggplot(Dataset[14:56, ], aes(x= Year, y = HPI)) +
             geom_line(aes( y = HPI, colour = "Los Angeles"), group = 1) +
             geom_line(aes( y = HPI_RK, colour = "Round Rock"), group = 1) +
             geom_smooth(method = lm) + ggtitle("HPI Trend")
@@ -222,7 +230,7 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
         
       # 5. Combine  LA's "Unemployment Rate" and " HPI" datasets together
           
-          Dataset_line_LA <- ggplot(Dataset, aes(Census)) +
+          Dataset_line_LA <- ggplot(Dataset[13:57, ], aes(Year)) +
             geom_line(aes( y = Unemployment_Rate, colour = "Unemployment_Rate"), group = 1) +
             geom_line(aes( y = HPI, colour = "HPI"), group = 1) +
             ggtitle("Los Angeles - Unemployment Rate & HPI")
@@ -231,14 +239,15 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
           
       # 6. Combine Round Rock's "HPI" and "Unemployment" datasets together
           
-          Dataset_line_Round_Rock <- ggplot(Dataset, aes(Census)) +
+          Dataset_line_Round_Rock <- ggplot(Dataset[15:57, ], aes(Year)) +
             geom_line(aes( y = Unemployment_Rate_RK, colour = "Unemployment Rate"), group = 1) +
             geom_line(aes( y = HPI_RK, colour = "HPI"), group = 1) +
             ggtitle("Round Rock - Unemployment Rate & HPI")
           Dataset_line_Round_Rock
           
-          RK.ds <- subset(Dataset, select = c("Unemployment_Rate_RK", "HPI_RK"))
+          RK.ds <- subset(Dataset[13:56, ], select = c("Unemployment_Rate_RK", "HPI_RK"))
           summary(RK.ds)
+          plot(RK.ds)
           
           RK.mod <- lm(Unemployment_Rate_RK ~ HPI_RK, # regression formula
                        data=RK.ds) 
