@@ -43,7 +43,7 @@ library(plotly)
 library(lubridate)
 library(plotly)
 ################################ DATASET INPUT ###################################
-datDir <- "C:/Users/Lishuang Cen/My Documents/Sandbox/Capstone Project/Capstone-Project"
+datDir <- "C:\Users\Lishuang Cen\Documents\Sandbox\Final_Capstone_Project\Datasets"
 #--- LA_Unemployment_Original
 datFile1 <- paste(datDir, "Los_Angeles_Unemployment_Original.csv", sep = "/")
 LA_Unemployment_Original <- read.table(datFile1, header = TRUE, sep= "")
@@ -87,9 +87,9 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
       names(Round_Rock_Unemployment_Original)[2] <- "Unemployment_Rate"
   #b. format the years
       #- only have the first month of every year
-      a <- endsWith(as.character(LA_Unemployment_Original$Year), "£¯1£¯1")  # Which rows to keep (kp)?
+      a <- endsWith(as.character(LA_Unemployment_Original$Year), "Â£Â¯1Â£Â¯1")  # Which rows to keep (kp)?
       LA_Unemployment_Clean <- LA_Unemployment_Original[a, ]
-      b <- endsWith(as.character(Round_Rock_Unemployment_Original$Year), "£¯1£¯1")  # Which rows to keep (kp)?
+      b <- endsWith(as.character(Round_Rock_Unemployment_Original$Year), "Â£Â¯1Â£Â¯1")  # Which rows to keep (kp)?
       Round_Rock_Unemployment_Clean <- Round_Rock_Unemployment_Original[b, ]
       #- format the "year"
       LA_Unemployment_Clean$Year <- year(as.Date(LA_Unemployment_Clean$Year, "%y"))
@@ -147,9 +147,9 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
       names(LA_HPI_Original)[2] <- "HPI"
       names(Round_Rock_HPI_Original)[2] <- "HPI"
     #b. only remain the first quarter of every year
-      d <- endsWith(as.character(Round_Rock_HPI_Original$Year), "£¯1£¯1")  # Which rows to keep (kp)?
+      d <- endsWith(as.character(Round_Rock_HPI_Original$Year), "Â£Â¯1Â£Â¯1")  # Which rows to keep (kp)?
       Round_Rock_HPI_Clean <- Round_Rock_HPI_Original[d,]
-      g <- endsWith(as.character(LA_HPI_Original$Year), "£¯1£¯1")  # Which rows to keep (kp)?
+      g <- endsWith(as.character(LA_HPI_Original$Year), "Â£Â¯1Â£Â¯1")  # Which rows to keep (kp)?
       LA_HPI_Clean <- LA_HPI_Original[g,]
     #c. make two data comparable in the number of years
       #LA_HPI_Clean <- LA_HPI_Original[4:42, ]
@@ -185,7 +185,7 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
                 ggtitle ("Unemployment Rate Trend From 1990 To 2016")
      
         Unemployment_line
-        
+
       # 2. Los_Angeles_Demographic_Original.csv vs. Round_Rock_Demographic_Original.csv., Pie chart
         # a. LA_Demographics
           names_LA <- as.character(LA_Demographics_Clean[,1])
@@ -217,6 +217,8 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
             geom_line(aes( y = HPI_RK, colour = "Round Rock"), group = 1) +
             geom_smooth(method = lm) + ggtitle("HPI Trend")
           HPI_line
+          
+
         
       # 5. Combine  LA's "Unemployment Rate" and " HPI" datasets together
           
@@ -226,6 +228,7 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
             ggtitle("Los Angeles - Unemployment Rate & HPI")
           Dataset_line_LA
           
+          
       # 6. Combine Round Rock's "HPI" and "Unemployment" datasets together
           
           Dataset_line_Round_Rock <- ggplot(Dataset, aes(Census)) +
@@ -233,4 +236,11 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
             geom_line(aes( y = HPI_RK, colour = "HPI"), group = 1) +
             ggtitle("Round Rock - Unemployment Rate & HPI")
           Dataset_line_Round_Rock
+          
+          RK.ds <- subset(Dataset, select = c("Unemployment_Rate_RK", "HPI_RK"))
+          summary(RK.ds)
+          
+          RK.mod <- lm(Unemployment_Rate_RK ~ HPI_RK, # regression formula
+                       data=RK.ds) 
+          summary(RK.mod)
 ################################################### END #########################################################
