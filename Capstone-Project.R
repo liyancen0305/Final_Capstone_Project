@@ -42,6 +42,7 @@ library (ggplot2)
 library(plotly)
 library(lubridate)
 library(plotly)
+library(scales)
 ################################ DATASET INPUT ###################################
 datDir <- "C:\\Users\\Lishuang Cen\\Documents\\Sandbox\\Final_Capstone_Project\\Datasets"
 #--- LA_Unemployment_Original
@@ -87,9 +88,9 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
       names(Round_Rock_Unemployment_Original)[2] <- "Unemployment_Rate"
   #b. format the years
       #- only have the first month of every year
-      a <- endsWith(as.character(LA_Unemployment_Original$Year), "Â£Â¯1Â£Â¯1")  # Which rows to keep (kp)?
+      a <- endsWith(as.character(LA_Unemployment_Original$Year), "£¯1£¯1")  # Which rows to keep (kp)?
       LA_Unemployment_Clean <- LA_Unemployment_Original[a, ]
-      b <- endsWith(as.character(Round_Rock_Unemployment_Original$Year), "Â£Â¯1Â£Â¯1")  # Which rows to keep (kp)?
+      b <- endsWith(as.character(Round_Rock_Unemployment_Original$Year), "£¯1£¯1")  # Which rows to keep (kp)?
       Round_Rock_Unemployment_Clean <- Round_Rock_Unemployment_Original[b, ]
       #- format the "year"
       LA_Unemployment_Clean$Year <- year(as.Date(LA_Unemployment_Clean$Year, "%y"))
@@ -147,9 +148,9 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
       names(LA_HPI_Original)[2] <- "HPI"
       names(Round_Rock_HPI_Original)[2] <- "HPI"
     #b. only remain the first quarter of every year
-      d <- endsWith(as.character(Round_Rock_HPI_Original$Year), "Â£Â¯1Â£Â¯1")  # Which rows to keep (kp)?
+      d <- endsWith(as.character(Round_Rock_HPI_Original$Year), "£¯1£¯1")  # Which rows to keep (kp)?
       Round_Rock_HPI_Clean <- Round_Rock_HPI_Original[d,]
-      g <- endsWith(as.character(LA_HPI_Original$Year), "Â£Â¯1Â£Â¯1")  # Which rows to keep (kp)?
+      g <- endsWith(as.character(LA_HPI_Original$Year), "£¯1£¯1")  # Which rows to keep (kp)?
       LA_HPI_Clean <- LA_HPI_Original[g,]
     #c. make two data comparable in the number of years
       #LA_HPI_Clean <- LA_HPI_Original[4:42, ]
@@ -267,9 +268,9 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
    
 ################################################### Linear Regression Model  #########################################################
          #  use it to test if LA has a higher upward trend vs Round Rock?  
-          com_Dataset <- rbind(na.omit(LA_Dataset), na.omit(RK_Dataset))
-          com_Dataset$City_[1:4] <- rep.int("Los Angeles", 4)
-          com_Dataset$City_[5:8] <- rep.int("Round Rock", 4)
+          com_Dataset <- rbind(LA_Dataset, RK_Dataset)
+          com_Dataset$City_[1:56] <- rep.int("Los Angeles", 56)
+          com_Dataset$City_[57:106] <- rep.int("Round Rock", 50)
           com_Dataset$Year <- rescale(com_Dataset$Year, to = c(0, 1), from = range(2000:2020, na.rm = TRUE, finite = TRUE))
      
          
