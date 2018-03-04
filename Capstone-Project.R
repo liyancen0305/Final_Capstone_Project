@@ -87,9 +87,9 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
       names(Round_Rock_Unemployment_Original)[2] <- "Unemployment_Rate"
   #b. format the years
       #- only have the first month of every year
-      a <- endsWith(as.character(LA_Unemployment_Original$Year), "Â£Â¯1Â£Â¯1")  # Which rows to keep (kp)?
+      a <- endsWith(as.character(LA_Unemployment_Original$Year), "£¯1£¯1")  # Which rows to keep (kp)?
       LA_Unemployment_Clean <- LA_Unemployment_Original[a, ]
-      b <- endsWith(as.character(Round_Rock_Unemployment_Original$Year), "Â£Â¯1Â£Â¯1")  # Which rows to keep (kp)?
+      b <- endsWith(as.character(Round_Rock_Unemployment_Original$Year), "£¯1£¯1")  # Which rows to keep (kp)?
       Round_Rock_Unemployment_Clean <- Round_Rock_Unemployment_Original[b, ]
       #- format the "year"
       LA_Unemployment_Clean$Year <- year(as.Date(LA_Unemployment_Clean$Year, "%y"))
@@ -147,9 +147,9 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
       names(LA_HPI_Original)[2] <- "HPI"
       names(Round_Rock_HPI_Original)[2] <- "HPI"
     #b. only remain the first quarter of every year
-      d <- endsWith(as.character(Round_Rock_HPI_Original$Year), "Â£Â¯1Â£Â¯1")  # Which rows to keep (kp)?
+      d <- endsWith(as.character(Round_Rock_HPI_Original$Year), "£¯1£¯1")  # Which rows to keep (kp)?
       Round_Rock_HPI_Clean <- Round_Rock_HPI_Original[d,]
-      g <- endsWith(as.character(LA_HPI_Original$Year), "Â£Â¯1Â£Â¯1")  # Which rows to keep (kp)?
+      g <- endsWith(as.character(LA_HPI_Original$Year), "£¯1£¯1")  # Which rows to keep (kp)?
       LA_HPI_Clean <- LA_HPI_Original[g,]
     #c. make two data comparable in the number of years
       #LA_HPI_Clean <- LA_HPI_Original[4:42, ]
@@ -183,13 +183,13 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
 #8. Merge all dataset together for Round Rock
       RK_Dataset <- merge(Round_Rock_HPI_Clean, Round_Rock_Historical_Population_Clean, all = TRUE, by.x = "Year", by.y = "Census")
       RK_Dataset <- merge(RK_Dataset, Round_Rock_Unemployment_Clean, all = TRUE, by.x = "Year", by.y = "Year")
-      names(RK_Dataset)[1:5] <- c("Year_RK", "HPI_RK", "Population_RK", "Percentage_Change_RK", "Unemployment_Rate_RK")
+      names(RK_Dataset)[1:5] <- c("Year", "HPI", "Population", "Percentage_Change", "Unemployment_Rate")
       RK_Dataset[49, 3] <- as.numeric("120892")
       RK_Dataset[49, 4] <- as.factor("21.03%")
       RK_Dataset <- RK_Dataset[1:50, ]
       RK_Dataset$Year <- as.numeric(RK_Dataset$Year)
 #9. Merge all dataset together
-      Dataset <- merge(LA_Dataset, RK_Dataset, all = TRUE, by.x = "Year", by.y = "Year_RK")
+      Dataset <- merge(LA_Dataset, RK_Dataset, all = TRUE, by.x = "Year", by.y = "Year")
       Dataset[55, c(3,7)] <- as.numeric(c("10137915", "120892"))
       Dataset[55, c(4,8)] <- as.factor(c("3.25%", "21.03%"))
       Dataset <- Dataset[1:56, ]
@@ -258,21 +258,14 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
    
 ################################################### Linear Regression Model  #########################################################
          #  use it to test if LA has a higher upward trend vs Round Rock?  
-          
-      # 1. Los Angeles County   
-          LA.ds <- subset(LA_Dataset, select = c("Unemployment_Rate", "HPI", "Year", "Population"))
-          summary(LA.ds)
-          plot(RK.ds)
-          
-          LA.ds.mod <- lm(HPI ~ Unemployment_Rate +Year+ Population -1, data = na.omit(LA.ds))
-          summary(LA.ds.mod)
-          
-      #2. Round Rock
-          RK.ds <- subset(RK_Dataset, select = c("Unemployment_Rate_RK", "HPI_RK", "Year", "Population_RK"))
-          summary(RK.ds)
-          plot(RK.ds)
-          
-          RK.ds.mod <- lm(HPI_RK ~ Unemployment_Rate_RK+Year+ Population_RK -1, data = na.omit(RK.ds))
-          summary(RK.ds.mod)
+          com_Dataset <- rbind(na.omit(LA_Dataset), na.omit(RK_Dataset))
+          com_Dataset$City_[1:4] <- rep.int("Los Angeles", 4)
+          com_Dataset$City_[5:8] <- rep.int("Round Rock", 4)
+          com_Dataset$Year <- rescale(com_Dataset$Year, to = c(0, 1), from = range(2000:2020, na.rm = TRUE, finite = TRUE))
+     
+         
+          ds.mod <- lm(HPI ~ Unemployment_Rate +Year+ Population + City_ -1, data = com_Dataset)
+          summary(ds.mod)
           
           
+##################################################  End ##############################################################################          
