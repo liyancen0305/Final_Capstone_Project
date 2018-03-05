@@ -42,7 +42,7 @@ library (ggplot2)
 library(plotly)
 library(lubridate)
 library(plotly)
-library(scales)
+library(zoo)
 ################################ DATASET INPUT ###################################
 datDir <- "C:\\Users\\Lishuang Cen\\Documents\\Sandbox\\Final_Capstone_Project\\Datasets"
 #--- LA_Unemployment_Original
@@ -269,13 +269,39 @@ Round_Rock_HPI_Original <- read.table(datFile8, header = TRUE, sep= "")
 ################################################### Linear Regression Model  #########################################################
          #  use it to test if LA has a higher upward trend vs Round Rock?  
           com_Dataset <- rbind(LA_Dataset, RK_Dataset)
+          #com_Dataset$City_LA <- ""
+          #com_Dataset$City_RK <- ""
+          #com_Dataset$Year_LA <- ""
+          #com_Dataset$Year_LA <- ""
+          com_Dataset$City_ <- ""
           com_Dataset$City_[1:56] <- rep.int("Los Angeles", 56)
           com_Dataset$City_[57:106] <- rep.int("Round Rock", 50)
+          #com_Dataset$City_LA[1:56] <- rep.int("Los Angeles", 56)
+          #com_Dataset$City_RK[57:106] <- rep.int("Round Rock", 50)
+          #com_Dataset$Year_LA[1:56] <- LA_Dataset$Year
+          #com_Dataset$Year_RK[57:106] <- RK_Dataset$Year
+          #datFile18 <- paste(datDir, "com_Datase.csv", sep = "/")
+          #write.table(com_Dataset, datFile18, row.names = FALSE)
+          
+          
+          #com_Dataset <- merge(LA_Dataset, RK_Dataset, by.x = ("Year"), by.y = ("Year"), all = TRUE)
+          #names(com_Dataset)[2:9] <- c("HPI")
+          
+          
+          com_Dataset$Population <- na.approx(com_Dataset$Population, rule =2)
+          
+          for (i in 1: 5) {
+            if (is.na(com_Dataset[ , i]) == TRUE) {
+            com_Dataset[i] <- na.approx(com_Dataset[ , i], na.rm = TRUE, rule = 2)}
+          }
+          
           com_Dataset$Year <- rescale(com_Dataset$Year, to = c(0, 1), from = range(2000:2020, na.rm = TRUE, finite = TRUE))
-     
-         
-          ds.mod <- lm(HPI ~ Unemployment_Rate +Year+ Population + City_ -1, data = com_Dataset)
+          #com_Dataset$City_<- rescale(com_Dataset$City_, to = c(0, 1), from = range(c("Los Angeles", "Round Rock"), na.rm = TRUE, finite = TRUE))
+          
+          #ds.mod.dat <- subset(com_Dataset, select = c("Year_RK", "Population"))
+          #plot(ds.mod.dat)
+          #cor(ds.mod.dat)
+          ds.mod <- lm(HPI ~ Unemployment_Rate + Population + Year * City_, data = com_Dataset)
           summary(ds.mod)
-          
-          
+         
 ##################################################  End ##############################################################################          
